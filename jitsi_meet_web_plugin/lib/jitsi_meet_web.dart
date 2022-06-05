@@ -188,15 +188,17 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
 
   // Setup the `JitsiMeetExternalAPI` JS script
   void _setupScripts() {
-    final html.ScriptElement script = html.ScriptElement()
-      ..appendText(_clientJs());
-    html.querySelector('head')?.children.add(script);
+    final tags = html.querySelector('head')?.children;
+    if (tags != null && !tags.any((e) => e.innerText == _clientJs)) {
+      final script = html.ScriptElement()..appendText(_clientJs);
+      tags.add(script);
+    }
   }
 
   // Script to allow Jitsi interaction
   // To allow Flutter interact with `JitsiMeetExternalAPI`
   // extends and override the constructor is needed
-  String _clientJs() => """
+  static const String _clientJs = """
 class JitsiMeetAPI extends JitsiMeetExternalAPI {
     constructor(domain , options) {
       console.log(options);
