@@ -42,10 +42,11 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
   /// A JitsiMeetingListener can be attached to this meeting
   /// that will automatically be removed when the meeting has ended
   @override
-  Future<JitsiMeetingResponse> joinMeeting(JitsiMeetingOptions options,
-      {JitsiMeetingListener? listener,
-      Map<RoomNameConstraintType, RoomNameConstraint>?
-          roomNameConstraints}) async {
+  Future<JitsiMeetingResponse> joinMeeting(
+    JitsiMeetingOptions options, {
+    JitsiMeetingListener? listener,
+    Map<RoomNameConstraintType, RoomNameConstraint>? roomNameConstraints,
+  }) async {
     // encode `options` Map to Json to avoid error
     // in interoperability conversions
     String webOptions = jsonEncode(options.webOptions);
@@ -201,7 +202,7 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
   static const String _clientJs = """
 class JitsiMeetAPI extends JitsiMeetExternalAPI {
     constructor(domain , options) {
-      console.log(options);
+      console.log('options ->', options);
       var _options = JSON.parse(options);
       if (!_options.hasOwnProperty("width")) {
         _options.width='100%';
@@ -211,7 +212,7 @@ class JitsiMeetAPI extends JitsiMeetExternalAPI {
       }
       // override parent to atach to view
       //_options.parentNode=document.getElementsByTagName('flt-platform-vw')[0].shadowRoot.getElementById('jitsi-meet-section');
-      console.log(_options);
+      console.log('_options ->', _options);
       _options.parentNode=document.querySelector("#jitsi-meet-section");
       super(domain, _options);
     }
