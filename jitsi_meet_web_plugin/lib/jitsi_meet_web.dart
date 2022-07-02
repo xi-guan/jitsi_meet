@@ -47,8 +47,7 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
     JitsiMeetingListener? listener,
     Map<RoomNameConstraintType, RoomNameConstraint>? roomNameConstraints,
   }) async {
-    // encode `options` Map to Json to avoid error
-    // in interoperability conversions
+    // encode `options` Map to Json to avoid error in interoperability conversions
     String webOptions = jsonEncode(options.webOptions);
     String serverURL = options.serverURL ?? "meet.jit.si";
     serverURL = serverURL.replaceAll(cleanDomain, "");
@@ -93,13 +92,17 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
   // add generic lister over current session
   _addGenericListeners(JitsiMeetingListener listener) {
     if (api == null) {
-      debugPrint("Jistsi instance not exists event can't be attached");
+      debugPrint(
+        "[JitsiMeetPlugin] - jistsi instance not exists event can't be attached",
+      );
       return;
     }
-    debugPrint("genericListeners ${listener.genericListeners}");
+    debugPrint(
+      "[JitsiMeetPlugin] - genericListeners ${listener.genericListeners}",
+    );
     if (listener.genericListeners != null) {
       listener.genericListeners?.forEach((item) {
-        debugPrint("eventName ${item.eventName}");
+        debugPrint("[JitsiMeetPlugin] - eventName ${item.eventName}");
         api?.on(item.eventName, allowInterop(item.callback));
       });
     }
@@ -111,30 +114,28 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
   }
 
   closeMeeting() {
-    debugPrint("Closing the meeting");
+    debugPrint("[JitsiMeetPlugin] - closing the meeting");
     api?.dispose();
     api = null;
   }
 
   /// Adds a JitsiMeetingListener that will broadcast conference events
   addListener(JitsiMeetingListener jitsiMeetingListener) {
-    debugPrint("Adding listeners");
+    debugPrint("[JitsiMeetPlugin] - adding listeners");
     _addGenericListeners(jitsiMeetingListener);
   }
 
   /// Remove JitsiListener
   /// Remove all list of listeners bassed on event name
   removeListener(JitsiMeetingListener jitsiMeetingListener) {
-    debugPrint("Removing listeners");
+    debugPrint("[JitsiMeetPlugin] - removing listeners");
     List<String> listeners = [];
     if (jitsiMeetingListener.onConferenceJoined != null) {
       listeners.add("videoConferenceJoined");
     }
-    ;
     if (jitsiMeetingListener.onConferenceTerminated != null) {
       listeners.add("videoConferenceLeft");
     }
-    ;
     jitsiMeetingListener.genericListeners
         ?.forEach((element) => listeners.add(element.eventName));
     api?.removeEventListener(listeners);
@@ -202,7 +203,7 @@ class JitsiMeetPlugin extends JitsiMeetPlatform {
   static const String _clientJs = """
 class JitsiMeetAPI extends JitsiMeetExternalAPI {
     constructor(domain , options) {
-      console.log('options ->', options);
+      console.log(options, 'options');
       var _options = JSON.parse(options);
       if (!_options.hasOwnProperty("width")) {
         _options.width='100%';
@@ -212,7 +213,7 @@ class JitsiMeetAPI extends JitsiMeetExternalAPI {
       }
       // override parent to atach to view
       //_options.parentNode=document.getElementsByTagName('flt-platform-vw')[0].shadowRoot.getElementById('jitsi-meet-section');
-      console.log('_options ->', _options);
+      console.log(_options, '_options');
       _options.parentNode=document.querySelector("#jitsi-meet-section");
       super(domain, _options);
     }
